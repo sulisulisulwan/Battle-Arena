@@ -6,6 +6,7 @@ const App = () => {
   const [warrior, setWarrior] = useState(null);
   const [username, setUsername] = useState(null);
   const [password, setPassword] = useState(null);
+  const [isCreateUserView, setIsCreateUserView] = useState(false);
 
   const handleOnChangeUsername = (e) => {
     setUsername(e.target.value);
@@ -15,13 +16,18 @@ const App = () => {
     setPassword(e.target.value);
   }
 
-  const handleSubmitForm= (e) => {
+  const toggleIsCreateUserView = () => {
+    setIsCreateUserView(!isCreateUserView);
+  }
+
+  const handleUserFormSubmit= (e) => {
     e.preventDefault()
     let body = {
       username: username,
-      password: password
+      password: password,
+      isCreateUser: isCreateUserView
     }
-    axios.post('/getWarrior', body)
+    axios.post('/users', body)
       .then(result => {
         let warriorData = result.data;
         setWarrior(warriorData);
@@ -31,10 +37,26 @@ const App = () => {
       })
   }
 
+  const AlreadyUser = () => {
+    return (
+      <>
+        Already a warrior in Battle Arena? Click <span style={{fontWeight: 'bold', cursor: 'pointer'}} onClick={toggleIsCreateUserView}>here</span> to sign in!
+      </>
+    )
+  }
+
+  const CreateUser = () => {
+    return (
+      <>
+        Or click <span style={{fontWeight: 'bold', cursor: 'pointer'}} onClick={toggleIsCreateUserView}>here</span> if you haven't yet joined the Battle Arena.
+      </>
+    )
+  }
+
   return (
     <div>
-      Warrior's Entrance
-      <form onSubmit={handleSubmitForm}>
+      {isCreateUserView ? 'Join the Battle Arena!' : 'Warrior\'s Entrance'}
+      <form onSubmit={handleUserFormSubmit}>
         <label>
           Name:
           <input type="text" onChange={handleOnChangeUsername}></input>
@@ -45,7 +67,7 @@ const App = () => {
         </label>
         <input type="submit"></input>
       </form>
-
+      {isCreateUserView ? <AlreadyUser /> : <CreateUser/>}
     </div>
   )
 }
